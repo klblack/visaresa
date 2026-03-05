@@ -8,7 +8,7 @@ import { ExternalLink } from "lucide-react";
 import type { VisaInfo } from "@/types/database";
 import { VISA_TYPE_LABELS } from "@/types/database";
 import { formatDateJa } from "@/lib/utils";
-import DocsAccordion from "./DocsAccordion";
+import DocumentRequirements from "./country/DocumentRequirements";
 
 interface VisaInfoCardProps {
   visaInfo: VisaInfo;
@@ -58,9 +58,9 @@ export default function VisaInfoCard({ visaInfo }: VisaInfoCardProps) {
         </div>
       </div>
 
-      {/* 必要書類（アコーディオン） */}
+      {/* 必要書類（3分類表示） */}
       {visaInfo.required_docs && visaInfo.required_docs.length > 0 && (
-        <DocsAccordion docs={visaInfo.required_docs} />
+        <DocumentRequirements docs={visaInfo.required_docs} />
       )}
 
       {/* 注意事項 */}
