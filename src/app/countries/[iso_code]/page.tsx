@@ -7,7 +7,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, Globe } from "lucide-react";
+import { ArrowLeft, Globe, ExternalLink } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import VisaInfoCard from "@/components/VisaInfoCard";
 import DisclaimerBanner from "@/components/DisclaimerBanner";
@@ -15,6 +15,7 @@ import EnhancedCountryLayout from "@/components/country/EnhancedCountryLayout";
 import type { CountryWithVisaInfo } from "@/types/database";
 import type { CountryVisaData } from "@/types/enhanced";
 import { usData } from "@/data/us";
+import { formatDateJa } from "@/lib/utils";
 
 interface PageProps {
   params: { iso_code: string };
@@ -53,9 +54,28 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const country = await getCountryWithVisaInfo(params.iso_code);
   if (!country) return { title: "国が見つかりません" };
 
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://visaresa.com";
+  const canonical = `${siteUrl}/countries/${params.iso_code.toLowerCase()}`;
+  const title = `${country.name_ja}のビザ情報 | 日本パスポート`;
+  const description = `日本パスポートで${country.name_ja}に渡航する際のビザ要否・最大滞在日数・必要書類・申請方法を確認。`;
+
   return {
-    title: `${country.name_ja}のビザ情報`,
-    description: `日本パスポートで${country.name_ja}に渡航する際のビザ要否・必要書類・申請方法。`,
+    title,
+    description,
+    alternates: { canonical },
+    openGraph: {
+      title,
+      description,
+      url: canonical,
+      siteName: "VISARESA",
+      locale: "ja_JP",
+      type: "article",
+    },
+    twitter: {
+      card: "summary",
+      title,
+      description,
+    },
   };
 }
 
@@ -101,7 +121,36 @@ export default async function CountryPage({ params }: PageProps) {
       </div>
 
       {visa ? (
-        <VisaInfoCard visaInfo={visa} />
+        <>
+          <VisaInfoCard visaInfo={visa} />
+          {/* 情報の確認日・出典 */}
+          <div className="mt-4 rounded-2xl border border-gray-100 bg-gray-50 px-5 py-4">
+            <h2 className="mb-2 text-xs font-semibold uppercase tracking-widest text-gray-400">
+              情報について
+            </h2>
+            <dl className="space-y-1 text-xs text-gray-500">
+              <div className="flex gap-2">
+                <dt className="shrink-0 text-gray-400">確認日</dt>
+                <dd>{formatDateJa(visa.verified_at)}</dd>
+              </div>
+              {visa.source_url && (
+                <div className="flex gap-2">
+                  <dt className="shrink-0 text-gray-400">出典</dt>
+                  <dd>
+                    <a
+                      href={visa.source_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 text-blue-600 hover:underline"
+                    >
+                      公式情報 <ExternalLink size={10} />
+                    </a>
+                  </dd>
+                </div>
+              )}
+            </dl>
+          </div>
+        </>
       ) : (
         <div className="rounded-2xl border border-dashed border-gray-200 p-8 text-center">
           <Globe size={36} className="mx-auto mb-3 text-gray-300" />

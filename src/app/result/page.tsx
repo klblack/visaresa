@@ -41,10 +41,14 @@ async function getCountry(isoCode: string): Promise<Country | null> {
 
 export async function generateMetadata({ searchParams }: PageProps): Promise<Metadata> {
   const code = searchParams.country?.toUpperCase();
-  if (!code) return { title: "渡航判定結果" };
-  const country = await getCountry(code);
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://visaresa.com";
+  const country = code ? await getCountry(code) : null;
+  const canonical = code ? `${siteUrl}/countries/${code.toLowerCase()}` : `${siteUrl}/check`;
+
   return {
     title: country ? `${country.name_ja}への渡航判定結果` : "渡航判定結果",
+    robots: { index: false, follow: false },
+    alternates: { canonical },
   };
 }
 
