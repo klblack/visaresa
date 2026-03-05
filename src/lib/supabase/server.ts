@@ -4,7 +4,7 @@
  * Next.js の cookies() を使ってセッションを管理する。
  */
 
-import { createServerClient } from "@supabase/ssr";
+import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import { cookies } from "next/headers";
 
 // サーバー環境での Supabase クライアントを生成する関数
@@ -24,7 +24,7 @@ export function createClient() {
         },
         // レスポンスにクッキーをセットする
         // Server Component では書き込み不可のため try/catch で囲む
-        setAll(cookiesToSet) {
+        setAll(cookiesToSet: { name: string; value: string; options: CookieOptions }[]) {
           try {
             cookiesToSet.forEach(({ name, value, options }) =>
               cookieStore.set(name, value, options)
