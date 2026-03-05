@@ -74,28 +74,29 @@ export interface CountryWithVisaInfo extends Country {
 }
 
 // ビザ種別の日本語ラベル・カラー対応
+// bgColor / color はバッジ・ヘッダーの背景色・文字色として使用する
 export const VISA_TYPE_LABELS: Record<
   VisaType,
   { label: string; color: string; bgColor: string }
 > = {
   visa_free: {
     label: "ビザ不要",
-    color: "text-green-700",
-    bgColor: "bg-green-100",
+    color: "text-white",
+    bgColor: "bg-emerald-500",
   },
   visa_on_arrival: {
-    label: "アライバルビザ",
-    color: "text-blue-700",
-    bgColor: "bg-blue-100",
+    label: "到着ビザ",
+    color: "text-gray-900",
+    bgColor: "bg-yellow-400",
   },
   e_visa: {
-    label: "電子ビザ（eVisa）",
-    color: "text-purple-700",
-    bgColor: "bg-purple-100",
+    label: "電子ビザ",
+    color: "text-white",
+    bgColor: "bg-blue-500",
   },
   embassy: {
-    label: "大使館申請",
-    color: "text-orange-700",
-    bgColor: "bg-orange-100",
+    label: "要申請",
+    color: "text-white",
+    bgColor: "bg-red-500",
   },
 };

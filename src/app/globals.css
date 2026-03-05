@@ -29,7 +29,7 @@
 
   /* フォントサイズとカラーのベース設定 */
   body {
-    @apply bg-gray-50 text-gray-900 antialiased;
+    @apply bg-white text-gray-900 antialiased;
     font-feature-settings: "palt"; /* 日本語プロポーショナル間隔 */
   }
 
