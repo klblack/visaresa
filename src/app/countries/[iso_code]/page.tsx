@@ -1,6 +1,7 @@
 /**
  * 国別ビザ情報詳細ページ
- * /countries/[iso_code] でアクセスする（例: /countries/th）
+ * /countries/[iso_code] でアクセスする（例: /countries/us）
+ * 拡張データが存在する国は EnhancedCountryLayout を使用する。
  */
 
 import type { Metadata } from "next";
@@ -10,11 +11,20 @@ import { ArrowLeft, Globe } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import VisaInfoCard from "@/components/VisaInfoCard";
 import DisclaimerBanner from "@/components/DisclaimerBanner";
+import EnhancedCountryLayout from "@/components/country/EnhancedCountryLayout";
 import type { CountryWithVisaInfo } from "@/types/database";
+import type { EnhancedCountryData } from "@/types/enhanced";
+import { usData } from "@/data/us";
 
 interface PageProps {
   params: { iso_code: string };
 }
+
+// 拡張データが存在する国のマップ
+// 将来的に他の国が増えたらここに追加する
+const ENHANCED_DATA: Record<string, EnhancedCountryData> = {
+  US: usData,
+};
 
 async function getCountryWithVisaInfo(
   isoCode: string
@@ -51,14 +61,19 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function CountryPage({ params }: PageProps) {
   const country = await getCountryWithVisaInfo(params.iso_code);
-
   if (!country) notFound();
 
+  // 拡張データが存在する国は拡張レイアウトで表示
+  const enhancedData = ENHANCED_DATA[params.iso_code.toUpperCase()];
+  if (enhancedData) {
+    return <EnhancedCountryLayout country={country} data={enhancedData} />;
+  }
+
+  // 拡張データがない国は基本レイアウト
   const visa = country.visa_info;
 
   return (
     <div className="max-w-2xl">
-      {/* パンくずリスト */}
       <div className="mb-8">
         <Link
           href="/"
@@ -69,7 +84,6 @@ export default async function CountryPage({ params }: PageProps) {
         </Link>
       </div>
 
-      {/* 国名ヘッダー */}
       <div className="mb-5 flex items-center gap-4">
         <span className="text-6xl" aria-hidden="true">
           {country.flag_emoji ?? "🏳"}
@@ -82,12 +96,10 @@ export default async function CountryPage({ params }: PageProps) {
         </div>
       </div>
 
-      {/* 免責事項バナー（コンパクト） */}
       <div className="mb-6">
         <DisclaimerBanner />
       </div>
 
-      {/* ビザ情報カード */}
       {visa ? (
         <VisaInfoCard visaInfo={visa} />
       ) : (
