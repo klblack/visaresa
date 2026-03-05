@@ -13,7 +13,7 @@ import VisaInfoCard from "@/components/VisaInfoCard";
 import DisclaimerBanner from "@/components/DisclaimerBanner";
 import EnhancedCountryLayout from "@/components/country/EnhancedCountryLayout";
 import type { CountryWithVisaInfo } from "@/types/database";
-import type { EnhancedCountryData } from "@/types/enhanced";
+import type { CountryVisaData } from "@/types/enhanced";
 import { usData } from "@/data/us";
 
 interface PageProps {
@@ -22,7 +22,7 @@ interface PageProps {
 
 // 拡張データが存在する国のマップ
 // 将来的に他の国が増えたらここに追加する
-const ENHANCED_DATA: Record<string, EnhancedCountryData> = {
+const ENHANCED_DATA: Record<string, CountryVisaData> = {
   US: usData,
 };
 

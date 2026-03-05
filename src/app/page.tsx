@@ -4,6 +4,7 @@
  */
 
 import type { Metadata } from "next";
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import CountryCard from "@/components/CountryCard";
 import SearchBar from "@/components/SearchBar";
@@ -50,8 +51,16 @@ export default async function HomePage() {
         <p className="mb-8 text-sm text-gray-400">
           ビザ要否・滞在日数・申請費用を一目で確認
         </p>
-        <div className="flex justify-center">
-          <SearchBar />
+        <div className="flex flex-col items-center gap-4">
+          <Link
+            href="/check"
+            className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-8 py-4 text-base font-bold text-white shadow-sm transition-colors hover:bg-blue-700"
+          >
+            渡航判定を始める →
+          </Link>
+          <div className="flex w-full max-w-md justify-center">
+            <SearchBar />
+          </div>
         </div>
       </section>
 

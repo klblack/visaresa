@@ -1,19 +1,12 @@
 /**
- * アメリカ（US）拡張ビザ情報
- * DB の visa_info を静的コンテンツで補完したもの。
- * MVPスコープ：日本国籍・観光・90日以内のデフォルト表示。
+ * アメリカ（US）ビザ情報
+ * 2段階結論構造: A) 出国前に必要 / B) 入国成立条件
  */
 
-import type { EnhancedCountryData } from "@/types/enhanced";
+import type { CountryVisaData } from "@/types/enhanced";
 
-export const usData: EnhancedCountryData = {
+export const usData: CountryVisaData = {
   updatedAt: "2025-01-01",
-
-  conditions: {
-    nationality: "日本国籍",
-    purpose: "観光・商用",
-    maxStayDays: 90,
-  },
 
   sources: [
     {
@@ -40,21 +33,16 @@ export const usData: EnhancedCountryData = {
       "入国要件・ビザ規則は米国政府の政策変更により予告なく変わります。本サービスに掲載された情報に基づく入国拒否・費用損害等について、当サービスは一切の責任を負いません。渡航前には必ず米国大使館・外務省の公式情報を確認し、ご自身の責任で渡航してください。",
   },
 
-  conclusions: {
+  /** A) 出国前に必要（パスポート以外） */
+  preDeparture: {
     required: [
       {
         id: "esta",
         title: "ESTA（電子渡航認証）",
         description:
-          "渡航72時間前までに申請推奨。有効期間2年または旅券期限まで（短い方）。公式サイト以外は手数料割増のため要注意。",
+          "渡航72時間前までに申請推奨。有効期間2年またはパスポート期限まで（短い方）。公式サイト以外は手数料割増のため要注意。",
         fee: "USD $21",
         url: "https://esta.cbp.dhs.gov/",
-      },
-      {
-        id: "passport",
-        title: "ICチップ搭載の電子パスポート",
-        description:
-          "2006年10月以降発行の電子パスポートが必須。有効期限が滞在終了日まであることを事前確認。",
       },
     ],
     conditional: [
@@ -69,10 +57,48 @@ export const usData: EnhancedCountryData = {
         url: "https://jp.usembassy.gov/ja/visas-ja/",
       },
     ],
-    notRequired: [
-      "別途のビザ申請（日本国籍・観光・90日以内はESTAで代替）",
-      "健康診断",
-      "残高証明書（入国時に任意提示の場合あり）",
+    recommended: [
+      {
+        id: "insurance",
+        title: "旅行保険",
+        description:
+          "米国の医療費は非常に高額。一度の入院で数百万円に達することも。加入を強く推奨。",
+      },
+    ],
+  },
+
+  /** B) 入国成立条件 */
+  entryConditions: {
+    required: [
+      {
+        id: "esta-passport",
+        title: "有効なESTAと電子パスポート",
+        description:
+          "ESTAが承認済みであること、かつ2006年10月以降発行のICチップ搭載電子パスポートであること。有効期限が滞在終了日まであることを確認。",
+      },
+      {
+        id: "cbp",
+        title: "CBP入国審査通過",
+        description:
+          "米国税関・国境警備局の審査で渡航目的・滞在計画を申告。指紋採取・顔写真撮影あり。虚偽申告は入国拒否・渡航禁止につながる。",
+      },
+    ],
+    discretionary: [
+      {
+        id: "return-ticket",
+        title: "帰国便の予約確認",
+        description: "入国審査官が滞在期間を確認するために提示を求める場合がある。",
+      },
+      {
+        id: "accommodation",
+        title: "滞在先住所",
+        description: "最初の宿泊先の住所を英語で答えられること。ホテル名・番地を控えておくと安心。",
+      },
+      {
+        id: "funds",
+        title: "十分な滞在資金",
+        description: "滞在目的と期間に見合った資金があることを審査官が確認する場合がある。",
+      },
     ],
   },
 

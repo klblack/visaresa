@@ -1,16 +1,15 @@
 /**
  * 拡張国別ページレイアウト
- * 仕様 B型+C型：判定UX＋堅牢な説明/免責/更新履歴
- * 全セクションを正しい順序で組み立てるオーケストレーター。
+ * 2段階結論（A: 出国前必要 / B: 入国成立条件）+ 詳細セクション群
  */
 
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import type { Country } from "@/types/database";
-import type { EnhancedCountryData } from "@/types/enhanced";
+import type { CountryVisaData } from "@/types/enhanced";
 import DisclaimerBanner from "@/components/DisclaimerBanner";
 import ConditionsBar from "./ConditionsBar";
-import ConclusionCard from "./ConclusionCard";
+import TwoStageSummary from "@/components/result/TwoStageSummary";
 import Checklist from "./Checklist";
 import DocumentCards from "./DocumentCards";
 import Timeline from "./Timeline";
@@ -22,7 +21,11 @@ import { formatDateJa } from "@/lib/utils";
 
 interface Props {
   country: Country;
-  data: EnhancedCountryData;
+  data: CountryVisaData;
+  /** /check からのパラメータ（あれば ConditionsBar に反映） */
+  purpose?: string;
+  stayLabel?: string;
+  via?: string;
 }
 
 const CATEGORY_BADGE: Record<string, string> = {
@@ -31,7 +34,13 @@ const CATEGORY_BADGE: Record<string, string> = {
   大使館:   "bg-emerald-100 text-emerald-700",
 };
 
-export default function EnhancedCountryLayout({ country, data }: Props) {
+export default function EnhancedCountryLayout({
+  country,
+  data,
+  purpose = "観光・商用",
+  stayLabel = "90日以内",
+  via,
+}: Props) {
   const uniqueCategories = data.sources
     .map((s) => s.category)
     .filter((cat, i, arr) => arr.indexOf(cat) === i);
@@ -49,7 +58,7 @@ export default function EnhancedCountryLayout({ country, data }: Props) {
         </Link>
       </div>
 
-      {/* 1) ページヘッダー：国旗+国名 / 確認日 / 出典カテゴリバッジ */}
+      {/* ページヘッダー：国旗+国名 / 確認日 / 出典カテゴリバッジ */}
       <div className="mb-5">
         <div className="mb-3 flex items-center gap-4">
           <span className="text-6xl" aria-hidden="true">
@@ -80,50 +89,46 @@ export default function EnhancedCountryLayout({ country, data }: Props) {
         </div>
       </div>
 
-      {/* 10a) 免責（短文）*/}
+      {/* 免責（短文）*/}
       <div className="mb-4">
         <DisclaimerBanner />
       </div>
 
-      {/* 2) 条件バー（Sticky）*/}
-      <ConditionsBar conditions={data.conditions} />
+      {/* 条件バー（Sticky）*/}
+      <ConditionsBar purpose={purpose} stayLabel={stayLabel} via={via} />
 
       {/* 各セクション */}
       <div className="mt-6 space-y-8">
-        {/* 3) 結論カード */}
+        {/* 2段階結論 */}
         <Section label="入国要件">
-          <ConclusionCard
-            required={data.conclusions.required}
-            conditional={data.conclusions.conditional}
-            notRequired={data.conclusions.notRequired}
-          />
+          <TwoStageSummary data={data} />
         </Section>
 
-        {/* 4) チェックリスト */}
+        {/* チェックリスト */}
         <Checklist countryName={country.name_ja} items={data.checklist} />
 
-        {/* 5) 必要書類 */}
+        {/* 必要書類 */}
         <Section label="必要書類">
           <DocumentCards documents={data.documents} />
         </Section>
 
-        {/* 6) 手続きの流れ */}
+        {/* 手続きの流れ */}
         <Section label="手続きの流れ">
           <Timeline steps={data.timeline} />
         </Section>
 
-        {/* 7) FAQ */}
+        {/* FAQ */}
         <Section label="よくある質問">
           <FAQAccordion faqs={data.faqs} />
         </Section>
 
-        {/* 8) 出典 */}
+        {/* 出典 */}
         <SourcesPanel sources={data.sources} />
 
-        {/* 9) 更新履歴 */}
+        {/* 更新履歴 */}
         <ChangeLog entries={data.changeLog} />
 
-        {/* 10b) 免責（詳細）*/}
+        {/* 免責（詳細）*/}
         <Disclaimer detail={data.disclaimer.detail} />
       </div>
     </div>

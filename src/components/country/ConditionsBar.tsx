@@ -2,29 +2,37 @@
 
 /**
  * 条件バー（Sticky）
- * 現在の表示条件（国籍・目的・滞在日数）を常時表示する。
- * MVPでは固定値のみ表示。
+ * 現在の表示条件（国籍・目的・滞在日数・経由地）を常時表示する。
  */
 
-import type { EnhancedConditions } from "@/types/enhanced";
-
 interface ConditionsBarProps {
-  conditions: EnhancedConditions;
+  nationality?: string;
+  purpose: string;
+  stayLabel: string;
+  via?: string;
 }
 
-export default function ConditionsBar({ conditions }: ConditionsBarProps) {
+export default function ConditionsBar({
+  nationality = "日本国籍",
+  purpose,
+  stayLabel,
+  via,
+}: ConditionsBarProps) {
   return (
     <div className="sticky top-0 z-30 border-b border-gray-100 bg-white/95 backdrop-blur-sm">
       <div className="flex items-center gap-2 overflow-x-auto py-3">
         <span className="shrink-0 text-xs text-gray-400">表示条件：</span>
-        <Chip>🇯🇵 {conditions.nationality}</Chip>
+        <Chip>🇯🇵 {nationality}</Chip>
         <Divider />
-        <Chip>✈️ {conditions.purpose}</Chip>
+        <Chip>✈️ {purpose}</Chip>
         <Divider />
-        <Chip>📅 {conditions.maxStayDays}日以内</Chip>
-        <span className="ml-auto shrink-0 rounded bg-gray-100 px-2 py-0.5 text-xs text-gray-400">
-          デフォルト固定
-        </span>
+        <Chip>📅 {stayLabel}</Chip>
+        {via && (
+          <>
+            <Divider />
+            <Chip>🔀 経由: {via}</Chip>
+          </>
+        )}
       </div>
     </div>
   );

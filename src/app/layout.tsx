@@ -50,12 +50,12 @@ export default function RootLayout({ children }: RootLayoutProps) {
                 日本パスポートのビザ情報
               </span>
             </a>
-            <nav>
-              <a
-                href="/"
-                className="text-sm text-gray-500 hover:text-gray-900"
-              >
-                ホーム
+            <nav className="flex items-center gap-4">
+              <a href="/check" className="text-sm font-medium text-blue-600 hover:text-blue-700">
+                渡航判定
+              </a>
+              <a href="/sources" className="text-sm text-gray-500 hover:text-gray-900">
+                情報ソース
               </a>
             </nav>
           </div>
