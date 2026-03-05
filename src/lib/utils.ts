@@ -47,6 +47,24 @@ export function formatStayDays(days: number | null): string {
 }
 
 /**
+ * 当然の必要書類（往復航空券・滞在先住所・滞在費証明・パスポート単体）を除外する
+ * DB のデータは変えず、表示時にフィルタリングする方針
+ */
+export function filterObviousDocs(docs: string[]): string[] {
+  return docs.filter((doc) => {
+    // 往復航空券・帰国便の航空券は除外
+    if (/航空券/.test(doc)) return false;
+    // 滞在先住所（ホテル予約確認書含む）は除外
+    if (/滞在先住所/.test(doc)) return false;
+    // 滞在費の証明（残高証明含む）は除外
+    if (/滞在費の証明/.test(doc)) return false;
+    // パスポート：有効期限・ICチップ・空白ページの具体的条件がない場合は除外
+    if (/パスポート/.test(doc) && !/有効期限|ICチップ|空白ページ/.test(doc)) return false;
+    return true;
+  });
+}
+
+/**
  * セッション ID を生成する
  * 免責事項の同意記録に使用する
  * crypto.randomUUID が使えない環境への fallback も含む

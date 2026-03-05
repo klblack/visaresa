@@ -7,6 +7,7 @@
 
 import { useState } from "react";
 import { ChevronDown } from "lucide-react";
+import { filterObviousDocs } from "@/lib/utils";
 
 interface DocsAccordionProps {
   docs: string[];
@@ -14,6 +15,11 @@ interface DocsAccordionProps {
 
 export default function DocsAccordion({ docs }: DocsAccordionProps) {
   const [isOpen, setIsOpen] = useState(false);
+  // 当然の書類（航空券・住所・滞在費証明・パスポート単体）を除外して表示
+  const filteredDocs = filterObviousDocs(docs);
+
+  // フィルタリング後に表示する書類がなければ何も表示しない
+  if (filteredDocs.length === 0) return null;
 
   return (
     <div className="border-t border-gray-100">
@@ -25,7 +31,7 @@ export default function DocsAccordion({ docs }: DocsAccordionProps) {
         <span className="font-medium text-gray-900">
           必要書類
           <span className="ml-2 text-sm font-normal text-gray-400">
-            {docs.length}件
+            {filteredDocs.length}件
           </span>
         </span>
         <ChevronDown
@@ -36,7 +42,7 @@ export default function DocsAccordion({ docs }: DocsAccordionProps) {
 
       {isOpen && (
         <ul className="space-y-2.5 px-6 pb-5">
-          {docs.map((doc, i) => (
+          {filteredDocs.map((doc, i) => (
             <li key={i} className="flex items-start gap-2.5 text-sm text-gray-600">
               <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-gray-300" />
               {doc}
